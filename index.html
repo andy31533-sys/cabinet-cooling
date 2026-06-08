@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>遊戲主機櫃體散熱優化方案 | 空間設計</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Chosen Palette: Warm Neutrals & Functional Accents (Background: Cream #F9F8F6, Text: Charcoal #2D3748, Warning/Heat: Terracotta #E07A5F, Success/Cool: Sage Green #81B29A, UI Accents: Sand #E8E5D9) -->
+    <!-- Application Structure Plan: The SPA uses a persuasive, linear dashboard structure. It starts with a Hero introducing the crisis. Section 1 (The Problem) uses an interactive Chart.js line chart to contrast the thermal trajectory of the original design vs. the optimized design, proving the "why". Section 2 (Equipment) uses interactive CSS-animated cards to visualize hardware airflow, exposing the "rear exhaust trap". Section 3 (Solutions) uses an interactive tabbed interface to present the 4 architectural recommendations clearly without overwhelming the user. Section 4 provides a high-contrast, actionable checklist for the designer. -->
+    <!-- Visualization & Content Choices: Report Info: Overheating risk -> Goal: Persuade -> Viz: Interactive Line Chart (Chart.js) comparing temps -> Justification: Shows the "Oven Effect" dynamically. Report Info: Hardware airflow -> Goal: Inform -> Viz: HTML/CSS structural models with Unicode animated arrows -> Justification: Replaces complex SVGs with DOM elements to show airflow directions. Report Info: 4 Recommendations -> Goal: Organize -> Viz: Tabbed interaction matrix -> Justification: Chunks information logically for exploration. Confirming NO SVG/Mermaid used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container { height: 380px; }
+        }
+
+        body {
+            background-color: #F9F8F6;
+            color: #2D3748;
+            font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang TC', 'Heiti TC', 'Microsoft JhengHei', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .gradient-text-heat {
+            background: linear-gradient(to right, #E07A5F, #D9534F);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tab-btn {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        .tab-btn.active {
+            background-color: #ffffff;
+            border-left-color: #81B29A;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            font-weight: bold;
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .flow-arrow {
+            position: absolute;
+            font-weight: bold;
+            font-size: 1.2rem;
+            animation: moveFlow 2s infinite linear;
+        }
+        .flow-arrow.hot { color: #E07A5F; }
+        .flow-arrow.cold { color: #5CB85C; }
+
+        @keyframes moveFlow {
+            0% { transform: translateY(0) scale(0.8); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateY(-30px) scale(1.2); opacity: 0; }
+        }
+
+        @keyframes moveFlowRight {
+            0% { transform: translateX(0) scale(0.8); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateX(30px) scale(1.2); opacity: 0; }
+        }
+
+        .flow-arrow-right {
+            position: absolute;
+            font-weight: bold;
+            font-size: 1.2rem;
+            animation: moveFlowRight 2s infinite linear;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <nav class="bg-white border-b border-[#E8E5D9] sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
+            <div class="font-bold text-xl tracking-wider text-[#2D3748]">
+                博愛香榭 <span class="font-light text-[#81B29A]">| 空間規劃</span>
+            </div>
+            <div class="hidden md:flex space-x-6 text-sm font-medium text-gray-600">
+                <a href="#analysis" class="hover:text-[#E07A5F] transition-colors">散熱危機分析</a>
+                <a href="#hardware" class="hover:text-[#E07A5F] transition-colors">硬體風流解析</a>
+                <a href="#solutions" class="hover:text-[#81B29A] transition-colors">優化方案矩陣</a>
+            </div>
+            <a href="#action" class="bg-[#2D3748] text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-gray-700 transition-colors">
+                設計師清單
+            </a>
+        </div>
+    </nav>
+
+    <header class="max-w-4xl mx-auto px-4 py-16 md:py-24 text-center">
+        <div class="inline-block bg-[#FDF0ED] border border-[#FADCD5] text-[#E07A5F] px-4 py-1.5 rounded-full text-sm font-bold tracking-wide mb-6">
+            ⚠️ 物理學與熱力學警訊
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">
+            高階遊戲主機的 <br class="hidden md:block" />
+            <span class="gradient-text-heat">「烤箱效應」危機</span>
+        </h1>
+        <p class="text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto">
+            針對目前的「電器櫃散熱孔方案（方案A/B）」，從熱力學角度分析，僅在底部開小孔將導致高階 PC 與 PS5 嚴重過熱。本指南將帶您了解設備特性，並提供確保硬體壽命的櫃體優化方案。
+        </p>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 pb-24 space-y-24">
+
+        <section id="analysis" class="bg-white rounded-3xl shadow-sm border border-[#E8E5D9] overflow-hidden">
+            <div class="p-8 md:p-10 border-b border-[#E8E5D9] bg-[#FAFAFA]">
+                <h2 class="text-2xl font-bold text-[#2D3748] mb-3">1. 為什麼目前的設計行不通？</h2>
+                <p class="text-gray-600">
+                    原設計（底部小圓孔/線型孔）違背了熱對流原理。點擊下方按鈕，觀察不同設計在遊戲高負載運作時的櫃內溫度變化預估。
+                </p>
+            </div>
+
+            <div class="p-8 md:p-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+                <div class="lg:col-span-4 space-y-4">
+                    <button id="btn-orig" class="w-full text-left p-5 rounded-2xl border-2 border-[#E07A5F] bg-[#FDF0ED] transition-all relative overflow-hidden group">
+                        <h3 class="font-bold text-[#D9534F] text-lg">方案 A/B (原設計)</h3>
+                        <p class="text-sm text-[#D9534F] mt-1 opacity-80">僅底部開孔 / 無主動排風</p>
+                        <div class="absolute right-4 top-1/2 -translate-y-1/2 text-2xl group-hover:scale-125 transition-transform">🔥</div>
+                    </button>
+
+                    <button id="btn-opt" class="w-full text-left p-5 rounded-2xl border-2 border-transparent bg-[#F4F8F6] hover:border-[#81B29A] transition-all relative overflow-hidden group">
+                        <h3 class="font-bold text-[#4A7C65] text-lg">優化建議方案</h3>
+                        <p class="text-sm text-[#4A7C65] mt-1 opacity-80">大面積網孔 + 頂部風扇</p>
+                        <div class="absolute right-4 top-1/2 -translate-y-1/2 text-2xl group-hover:scale-125 transition-transform">❄️</div>
+                    </button>
+
+                    <div id="analysis-text" class="mt-6 bg-[#2D3748] text-white p-5 rounded-2xl text-sm leading-relaxed shadow-inner">
+                        <strong class="text-[#E07A5F] block mb-2 text-base">三大致命缺陷：</strong>
+                        1. <strong>無排氣通道：</strong> 冷空氣下沉，熱空氣上升。僅下方開孔，熱氣全蓄積在櫃子上半部無法排出。<br><br>
+                        2. <strong>開孔率過低：</strong> 小孔造成極大風阻，無法滿足高階 PC 所需的大量空氣交換 (CFM)。<br><br>
+                        3. <strong>缺乏主動散熱：</strong> 木頭具保溫效果，被動自然散熱無法應付高功率設備。
+                    </div>
+                </div>
+
+                <div class="lg:col-span-8">
+                    <div class="chart-container">
+                        <canvas id="tempChart"></canvas>
+                    </div>
+                    <div class="text-center mt-4 text-xs text-gray-400 font-medium tracking-wide">
+                        * 模擬全負載遊戲狀態下（600W+），封閉櫃體內部的環境溫度預估。
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="hardware">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-[#2D3748] mb-4">2. 設備特性與熱流陷阱</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    在設計進排氣路徑前，必須先了解設備的風流方向。高階遊戲設備都有一個共通的排熱特性，若忽略將造成熱氣無限循環。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-[#E8E5D9] relative overflow-hidden">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-bold text-[#2D3748] flex items-center gap-3">
+                            <span class="bg-[#F4F1DE] p-3 rounded-xl text-xl">🖥️</span> 桌上型 PC
+                        </h3>
+                        <span class="text-sm font-mono bg-gray-100 px-3 py-1 rounded-full text-gray-600">中塔機殼</span>
+                    </div>
+
+                    <div class="bg-[#FAFAFA] rounded-2xl p-6 relative h-48 flex items-center justify-center border border-gray-100 mb-6">
+                        <div class="w-32 h-32 border-4 border-[#2D3748] rounded-lg relative bg-white shadow-sm flex flex-col justify-between">
+                            <div class="h-1/4 border-b-2 border-gray-100 w-full"></div>
+                            <div class="h-1/4 border-b-2 border-gray-100 w-full"></div>
+                            <div class="absolute -left-6 bottom-4 flow-arrow-right cold">➔</div>
+                            <div class="absolute left-1/2 -top-8 -translate-x-1/2 flow-arrow hot">⬆</div>
+                            <div class="absolute -right-8 top-1/2 -translate-y-1/2 flow-arrow-right hot">➔</div>
+                        </div>
+                    </div>
+
+                    <ul class="space-y-3 text-sm text-gray-600">
+                        <li class="flex justify-between border-b border-gray-50 pb-2">
+                            <span class="font-bold text-gray-800">尺寸</span> <span>45(H) x 22(W) x 45(D) cm</span>
+                        </li>
+                        <li class="flex justify-between border-b border-gray-50 pb-2">
+                            <span class="font-bold text-[#5CB85C]">進氣方向</span> <span>前方 / 下方</span>
+                        </li>
+                        <li class="flex justify-between border-b border-gray-50 pb-2">
+                            <span class="font-bold text-[#E07A5F]">排氣方向</span> <span>後方 / 上方</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-[#E8E5D9] relative overflow-hidden">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-bold text-[#2D3748] flex items-center gap-3">
+                            <span class="bg-[#F4F1DE] p-3 rounded-xl text-xl">🎮</span> PS5 主機
+                        </h3>
+                        <span class="text-sm font-mono bg-gray-100 px-3 py-1 rounded-full text-gray-600">直立放置</span>
+                    </div>
+
+                    <div class="bg-[#FAFAFA] rounded-2xl p-6 relative h-48 flex items-center justify-center border border-gray-100 mb-6">
+                        <div class="w-16 h-36 border-4 border-[#2D3748] rounded-t-xl rounded-b-md relative bg-white shadow-sm flex">
+                            <div class="w-1 h-full bg-blue-500 absolute left-2 opacity-20"></div>
+                            <div class="absolute -left-6 top-4 flow-arrow-right cold">➔</div>
+                            <div class="absolute left-1/2 -top-6 -translate-x-1/2 flow-arrow-right cold rotate-90" style="animation-direction: reverse;">➔</div>
+                            <div class="absolute -right-8 top-1/2 -translate-y-1/2 flow-arrow-right hot">➔</div>
+                        </div>
+                    </div>
+
+                    <ul class="space-y-3 text-sm text-gray-600">
+                        <li class="flex justify-between border-b border-gray-50 pb-2">
+                            <span class="font-bold text-gray-800">尺寸</span> <span>39(H) x 10.4(W) x 26(D) cm</span>
+                        </li>
+                        <li class="flex justify-between border-b border-gray-50 pb-2">
+                            <span class="font-bold text-[#5CB85C]">進氣方向</span> <span>機身前半部 / 上方邊緣</span>
+                        </li>
+                        <li class="flex justify-between border-b border-gray-50 pb-2">
+                            <span class="font-bold text-[#E07A5F]">排氣方向</span> <span>後方整面</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="bg-[#FDF0ED] border-l-4 border-[#E07A5F] p-6 rounded-r-2xl flex items-start gap-4">
+                <div class="text-[#E07A5F] text-2xl mt-1">⚠️</div>
+                <div>
+                    <h4 class="font-bold text-[#2D3748] text-lg mb-1">共通致命傷：背板熱反射</h4>
+                    <p class="text-gray-700">
+                        兩者都是往「後方」排熱。如果櫃子背板是封死的，且距離過近，熱氣會撞牆後反彈，被機器前端重新吸入，造成<strong>「熱氣無限循環」</strong>。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="solutions" class="bg-white rounded-3xl shadow-sm border border-[#E8E5D9] p-2 md:p-8">
+            <div class="text-center mb-10 pt-6">
+                <h2 class="text-3xl font-bold text-[#2D3748] mb-4">3. 改善設計優化矩陣</h2>
+                <p class="text-gray-600">為了達到充分散熱，請依序參考以下四個層級的設計建議，並與設計師進行討論。</p>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-6">
+                <div class="w-full md:w-1/3 flex flex-col gap-2 p-2">
+                    <button class="tab-btn active text-left px-6 py-4 rounded-xl text-gray-600 hover:bg-[#FAFAFA] flex justify-between items-center" data-target="tab1">
+                        <span class="font-bold">建議一：進排氣通道</span>
+                        <span class="text-lg opacity-50">01</span>
+                    </button>
+                    <button class="tab-btn text-left px-6 py-4 rounded-xl text-gray-600 hover:bg-[#FAFAFA] flex justify-between items-center" data-target="tab2">
+                        <span class="font-bold">建議二：門片材質</span>
+                        <span class="text-lg opacity-50">02</span>
+                    </button>
+                    <button class="tab-btn text-left px-6 py-4 rounded-xl text-gray-600 hover:bg-[#FAFAFA] flex justify-between items-center" data-target="tab3">
+                        <span class="font-bold">建議三：主動散熱系統</span>
+                        <span class="text-lg opacity-50">03</span>
+                    </button>
+                    <button class="tab-btn text-left px-6 py-4 rounded-xl text-gray-600 hover:bg-[#FAFAFA] flex justify-between items-center" data-target="tab4">
+                        <span class="font-bold">建議四：內部空間規劃</span>
+                        <span class="text-lg opacity-50">04</span>
+                    </button>
+                </div>
+
+                <div class="w-full md:w-2/3 bg-[#FAFAFA] rounded-2xl p-8 border border-[#E8E5D9] min-h-[400px]">
+
+                    <div id="tab1" class="tab-content active h-full flex flex-col justify-center">
+                        <h3 class="text-2xl font-bold text-[#81B29A] mb-4">建立完整的對流通道</h3>
+                        <p class="text-gray-700 mb-8 font-medium">最基本要求：如果堅持使用木作門片，絕對不能只在底部開孔。</p>
+
+                        <div class="grid grid-cols-2 gap-6 mt-4">
+                            <div class="bg-white p-6 rounded-2xl border border-gray-100 text-center shadow-sm">
+                                <div class="text-[#4A7C65] text-3xl mb-3">⬇️ 🌬️</div>
+                                <h4 class="font-bold text-gray-800 mb-2">下方進氣</h4>
+                                <p class="text-sm text-gray-500">門片下方保留開孔，讓房間冷空氣進入。</p>
+                            </div>
+                            <div class="bg-white p-6 rounded-2xl border border-gray-100 text-center shadow-sm">
+                                <div class="text-[#E07A5F] text-3xl mb-3">🔥 ⬆️</div>
+                                <h4 class="font-bold text-gray-800 mb-2">上方排氣</h4>
+                                <p class="text-sm text-gray-500">門片最上方或櫃體頂部/側面上方，必須有面積相等或更大的開孔。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tab2" class="tab-content h-full flex flex-col justify-center">
+                        <div class="flex items-center gap-3 mb-4">
+                            <h3 class="text-2xl font-bold text-[#81B29A]">更改門片材質</h3>
+                            <span class="bg-[#E07A5F] text-white text-xs px-2 py-1 rounded font-bold tracking-wide">強烈建議</span>
+                        </div>
+                        <p class="text-gray-700 mb-8 font-medium">與其在木板上挖幾個小洞，不如直接改變門片的透氣材質，兼顧美觀與極佳的散熱。</p>
+
+                        <div class="space-y-4">
+                            <div class="bg-white p-5 rounded-2xl border border-gray-100 flex items-start gap-4">
+                                <div class="w-12 h-12 bg-[#F4F1DE] rounded-lg flex-shrink-0 flex items-center justify-center">🚪</div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800">方案 1：木作百葉門片 (Louvered)</h4>
+                                    <p class="text-sm text-gray-500 mt-1">百葉的斜角可以遮蔽內部的機器與凌亂的線材，同時提供大面積的空氣對流。</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-5 rounded-2xl border border-gray-100 flex items-start gap-4">
+                                <div class="w-12 h-12 bg-[#2D3748] rounded-lg flex-shrink-0 flex items-center justify-center text-white text-xs tracking-widest text-center leading-tight">...<br>...<br>...</div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800">方案 2：金屬沖孔網板 / 藤編 (Mesh)</h4>
+                                    <p class="text-sm text-gray-500 mt-1">門片中央挖空，鑲嵌金屬散熱網孔板。極具現代/電競質感，且開孔率極高。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tab3" class="tab-content h-full flex flex-col justify-center">
+                        <h3 class="text-2xl font-bold text-[#81B29A] mb-4">加入主動散熱系統</h3>
+                        <p class="text-gray-700 mb-6 font-medium">一勞永逸的作法：既然是訂製櫃體，強烈建議在櫃體上安裝靜音系統排風扇（類似機房概念）。</p>
+
+                        <div class="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
+                            <div class="absolute right-0 top-0 w-32 h-32 bg-gray-50 rounded-bl-full flex items-center justify-center opacity-50">
+                                <div class="text-5xl animate-[spin_4s_linear_infinite]">⚙️</div>
+                            </div>
+                            <div class="relative z-10">
+                                <h4 class="font-bold text-gray-800 text-lg mb-2">安裝做法</h4>
+                                <p class="text-gray-600 mb-4 text-sm">在櫃體的「背板上方」或「側板上方」（熱氣聚集處），洗孔安裝 12cm 或 14cm 的櫃體散熱風扇（市售 USB 供電或溫控風扇）。</p>
+
+                                <h4 class="font-bold text-gray-800 text-lg mb-2">預期效果</h4>
+                                <p class="text-gray-600 text-sm">門片下方進冷風，上方風扇主動將熱風抽出櫃外，確保機器永遠吸到冷空氣，完全打破木材保溫的限制。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tab4" class="tab-content h-full flex flex-col justify-center">
+                        <h3 class="text-2xl font-bold text-[#81B29A] mb-4">內部空間規劃細節</h3>
+                        <p class="text-gray-700 mb-8 font-medium">硬體的擺放位置與木作層板的尺寸，直接影響排熱通道的順暢度。</p>
+
+                        <div class="space-y-6">
+                            <div class="border-l-4 border-[#2D3748] pl-5 py-1">
+                                <h4 class="font-bold text-gray-800 text-lg">預留背部深度</h4>
+                                <p class="text-sm text-gray-600 mt-2">櫃體深度至少要比 PC/PS5 多出 <strong class="text-[#E07A5F]">10~15 公分</strong> 的背部空間，讓後方排出的熱風有緩衝區可以往上飄，絕對不要讓機器的排氣孔貼死木板。</p>
+                            </div>
+                            <div class="border-l-4 border-[#81B29A] pl-5 py-1">
+                                <h4 class="font-bold text-gray-800 text-lg">層板退縮留縫</h4>
+                                <p class="text-sm text-gray-600 mt-2">如果 PC 和 PS5 放不同層，中間的木層板不要做滿，靠後方牆壁處留一個 <strong class="text-[#81B29A]">5~10 公分</strong> 的空隙，讓下層熱氣順利往上飄，最後由頂部統一排出。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="action" class="bg-[#2D3748] rounded-3xl p-10 md:p-14 text-white shadow-xl relative overflow-hidden">
+            <div class="absolute -right-20 -top-20 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl"></div>
+
+            <div class="max-w-3xl relative z-10">
+                <h2 class="text-3xl font-bold mb-3">總結：給設計師的修改清單</h2>
+                <p class="text-gray-400 mb-10 text-lg">請將以下四點明確傳達給您的空間設計師，確保美觀與物理散熱兼具。</p>
+
+                <div class="space-y-4">
+                    <div class="flex items-center gap-5 bg-white/5 p-4 rounded-2xl border border-white/10">
+                        <div class="w-10 h-10 rounded-full bg-[#E07A5F] flex items-center justify-center font-bold text-xl shrink-0 shadow-lg">1</div>
+                        <div class="text-lg font-medium tracking-wide"><strong>放棄</strong> 原有的底部小孔設計。</div>
+                    </div>
+                    <div class="flex items-center gap-5 bg-white/5 p-4 rounded-2xl border border-white/10">
+                        <div class="w-10 h-10 rounded-full bg-[#81B29A] flex items-center justify-center font-bold text-xl shrink-0 shadow-lg">2</div>
+                        <div class="text-lg font-medium tracking-wide">門片改為 <strong>大面積金屬網孔</strong> 或 <strong>木百葉</strong> 形式。</div>
+                    </div>
+                    <div class="flex items-center gap-5 bg-white/5 p-4 rounded-2xl border border-white/10">
+                        <div class="w-10 h-10 rounded-full bg-[#81B29A] flex items-center justify-center font-bold text-xl shrink-0 shadow-lg">3</div>
+                        <div class="text-lg font-medium tracking-wide">若維持一般門片，確保 <strong>上方有排氣孔</strong>，且背板上方增設 <strong>主動排風扇</strong>。</div>
+                    </div>
+                    <div class="flex items-center gap-5 bg-white/5 p-4 rounded-2xl border border-white/10">
+                        <div class="w-10 h-10 rounded-full bg-[#81B29A] flex items-center justify-center font-bold text-xl shrink-0 shadow-lg">4</div>
+                        <div class="text-lg font-medium tracking-wide">櫃體深度加深，背部留出 <strong>10~15公分</strong> 散熱走道與層板空隙。</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-[#E8E5D9] py-8 text-center">
+        <p class="text-gray-400 text-sm">博愛香榭空間規劃 | 物理散熱分析報告</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const ctx = document.getElementById('tempChart').getContext('2d');
+
+            const labels = ['0分', '10分', '20分', '30分', '40分', '50分', '60分'];
+            const dataOrig = [25, 45, 62, 78, 88, 94, 98];
+            const dataOpt = [25, 30, 34, 38, 41, 42, 42];
+
+            const tempChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '櫃內預估溫度 (°C)',
+                        data: dataOrig,
+                        borderColor: '#E07A5F',
+                        backgroundColor: 'rgba(224, 122, 95, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#E07A5F',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#2D3748',
+                            titleFont: { size: 14 },
+                            bodyFont: { size: 14, weight: 'bold' },
+                            padding: 12,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) { return `預估溫度: ${context.parsed.y} °C`; }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            min: 20,
+                            max: 100,
+                            title: { display: true, text: '溫度 (°C)' },
+                            grid: { color: '#F3F4F6' }
+                        },
+                        x: {
+                            title: { display: true, text: '高負載運作時間' },
+                            grid: { display: false }
+                        }
+                    },
+                    interaction: { mode: 'index', intersect: false }
+                }
+            });
+
+            const btnOrig = document.getElementById('btn-orig');
+            const btnOpt = document.getElementById('btn-opt');
+            const analysisText = document.getElementById('analysis-text');
+
+            const textOrig = `
+                <strong class="text-[#E07A5F] block mb-2 text-base">三大致命缺陷：</strong>
+                1. <strong>無排氣通道：</strong> 冷空氣下沉，熱空氣上升。僅下方開孔，熱氣全蓄積在櫃子上半部無法排出。<br><br>
+                2. <strong>開孔率過低：</strong> 小孔造成極大風阻，無法滿足高階 PC 所需的大量空氣交換 (CFM)。<br><br>
+                3. <strong>缺乏主動散熱：</strong> 木頭具保溫效果，被動自然散熱無法應付高功率設備。
+            `;
+
+            const textOpt = `
+                <strong class="text-[#81B29A] block mb-2 text-base">優化後的高效熱循環：</strong>
+                1. <strong>順暢的煙囪效應：</strong> 下方進冷風，上方順利排出熱風，熱氣不再蓄積。<br><br>
+                2. <strong>極低風阻：</strong> 大面積網孔或百葉設計，讓設備內部的風扇能輕鬆吸入充足的冷空氣。<br><br>
+                3. <strong>強制對流：</strong> 頂部抽風扇能無視木材的保溫效應，將溫度穩定的控制在安全範圍內。
+            `;
+
+            btnOrig.addEventListener('click', () => {
+                btnOrig.classList.replace('border-transparent', 'border-[#E07A5F]');
+                btnOrig.classList.replace('bg-[#F4F8F6]', 'bg-[#FDF0ED]');
+                btnOpt.classList.replace('border-[#81B29A]', 'border-transparent');
+                btnOpt.classList.replace('bg-[#EAF3EF]', 'bg-[#F4F8F6]');
+
+                tempChart.data.datasets[0].data = dataOrig;
+                tempChart.data.datasets[0].borderColor = '#E07A5F';
+                tempChart.data.datasets[0].backgroundColor = 'rgba(224, 122, 95, 0.1)';
+                tempChart.data.datasets[0].pointBorderColor = '#E07A5F';
+                tempChart.update();
+
+                analysisText.innerHTML = textOrig;
+            });
+
+            btnOpt.addEventListener('click', () => {
+                btnOpt.classList.replace('border-transparent', 'border-[#81B29A]');
+                btnOpt.classList.replace('bg-[#F4F8F6]', 'bg-[#EAF3EF]');
+                btnOrig.classList.replace('border-[#E07A5F]', 'border-transparent');
+                btnOrig.classList.replace('bg-[#FDF0ED]', 'bg-[#F4F8F6]');
+
+                tempChart.data.datasets[0].data = dataOpt;
+                tempChart.data.datasets[0].borderColor = '#81B29A';
+                tempChart.data.datasets[0].backgroundColor = 'rgba(129, 178, 154, 0.1)';
+                tempChart.data.datasets[0].pointBorderColor = '#81B29A';
+                tempChart.update();
+
+                analysisText.innerHTML = textOpt;
+            });
+
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    tabBtns.forEach(b => {
+                        b.classList.remove('active', 'bg-white');
+                        b.classList.add('hover:bg-[#FAFAFA]');
+                    });
+                    tabContents.forEach(c => c.classList.remove('active'));
+
+                    btn.classList.add('active', 'bg-white');
+                    btn.classList.remove('hover:bg-[#FAFAFA]');
+
+                    const targetId = btn.getAttribute('data-target');
+                    document.getElementById(targetId).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
