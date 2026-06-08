@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>遊戲主機櫃體散熱設計建議書</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 
     <!-- Chosen Palette: Elegant Interior Tech (Background: #FAF9F6 Cream, Primary Text: #1E293B Slate-800, Warning: #E07A5F Terracotta, Success/Action: #6B9080 Sage, Surface: #FFFFFF) -->
 
@@ -91,9 +91,6 @@
 
     <!-- Hero Section -->
     <header class="max-w-4xl mx-auto px-4 pt-24 pb-20 text-center reveal">
-        <div class="inline-block bg-[#FDF0ED] text-[#E07A5F] px-4 py-1.5 rounded-full text-sm font-bold tracking-wide mb-6 border border-[#FADCD5]">
-            ⚠️ 熱力學危機分析報告
-        </div>
         <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 mb-6 leading-tight tracking-tight">
             遊戲主機櫃體 <br class="hidden md:block"> 散熱設計建議書
         </h1>
@@ -164,11 +161,11 @@
         <section id="solutions" class="scroll-mt-24">
             <div class="text-center mb-16 reveal">
                 <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">2. 改善設計建議</h2>
-                <p class="text-slate-500 max-w-2xl mx-auto">為了達到充分散熱，請參考以下三個層級的優化方案，並與設計師討論。</p>
+                <p class="text-slate-500 max-w-2xl mx-auto">為了達到充分散熱，請參考以下優化方案，並與設計師討論。</p>
             </div>
 
             <!-- Solutions Flow (Grid instead of Tabs for better reading flow) -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
 
                 <!-- Sol 1 -->
                 <div class="reveal">
@@ -219,36 +216,6 @@
                                     <h4 class="font-bold text-slate-800 text-sm">方案 2：金屬沖孔/藤編</h4>
                                     <p class="text-slate-500 text-xs mt-1">門片挖空鑲嵌網孔板，具電競質感且開孔率極高。</p>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sol 3 -->
-                <div class="reveal" style="transition-delay: 200ms;">
-                    <div class="bg-slate-800 text-white p-8 rounded-t-3xl relative overflow-hidden">
-                        <div class="absolute -right-4 -top-4 text-7xl opacity-10">📏</div>
-                        <span class="bg-slate-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">基礎配置</span>
-                        <h3 class="text-2xl font-bold mt-4 mb-2">建議三：<br>內部空間規劃</h3>
-                    </div>
-                    <div class="bg-white p-8 rounded-b-3xl shadow-sm border border-t-0 border-slate-100 min-h-[280px]">
-                        <div class="space-y-6">
-                            <div>
-                                <h4 class="font-bold text-slate-800 flex items-center gap-2 mb-2">
-                                    <span class="text-xl">📐</span> 預留深度
-                                </h4>
-                                <p class="text-slate-600 text-sm leading-relaxed">
-                                    櫃體深度至少要比 PC/PS5 多出 <strong>10~15公分</strong> 的背部空間，讓熱風有緩衝區可以往上飄，不要讓機器的排氣孔貼死木板。
-                                </p>
-                            </div>
-                            <div class="w-full h-px bg-slate-100"></div>
-                            <div>
-                                <h4 class="font-bold text-slate-800 flex items-center gap-2 mb-2">
-                                    <span class="text-xl">🪚</span> 層板留縫
-                                </h4>
-                                <p class="text-slate-600 text-sm leading-relaxed">
-                                    若 PC 和 PS5 放不同層，中間的木層板不要做滿，靠後方牆壁處留一個 <strong>5~10公分</strong> 空隙，讓熱氣能順利往上飄由頂部排出。
-                                </p>
                             </div>
                         </div>
                     </div>
